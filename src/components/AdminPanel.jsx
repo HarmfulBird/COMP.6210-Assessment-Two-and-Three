@@ -56,11 +56,7 @@ function AdminPanel() {
       .select("Subject")
       .eq("Subject", formattedRecord.Subject)
       .single();
-    
-    if (error && error.details !== "The result contains 0 rows") {
-      console.error("Error checking for existing record:\n", error.message);
-      return;
-    }
+      
     if (existingRecord) {
       // Show an error popup if the SCP Subject already exists
       window.alert(

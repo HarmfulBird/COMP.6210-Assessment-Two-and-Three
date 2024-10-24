@@ -49,13 +49,14 @@ function AdminPanel() {
       Subject: formatSCP(newRecord.Subject), // Format the Subject before adding
     };
 
+    console.log("Test1");
     // Check if the Subject already exists in the database
     const { data: existingRecord, error } = await client
       .from("SCPS")
       .select("Subject")
       .eq("Subject", formattedRecord.Subject)
       .single();
-    console.log("Test1");
+    
     if (error && error.details !== "The result contains 0 rows") {
       console.error("Error checking for existing record:\n", error.message);
       return;

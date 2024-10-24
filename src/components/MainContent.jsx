@@ -3,9 +3,22 @@ import { useParams } from "react-router-dom";
 import { client } from "../scripts/ClientConnection";
 
 function MainContent(props) {
+  /**
+   * Destructures the `Subject` object from the parameters and initializes a state variable `scpData` using `useState`.
+   * @returns None
+   */
   const { Subject } = useParams();
   const [scpData, setSCPData] = useState(null);
 
+  /**
+   * useEffect hook that fetches SCP details based on the Subject value.
+   * It sets the SCP data in the component's state if the fetch is successful.
+   * @param {Function} fetchSCPDetail - Asynchronous function to fetch SCP details.
+   * @param {string} Subject - The subject value used to fetch SCP details.
+   * @param {Function} setSCPData - Function to set SCP data in the component's state.
+   * @param {Object} client - Supabase client object used to make the API request.
+   * @returns None
+   */
   useEffect(() => {
     const fetchSCPDetail = async () => {
       const { data, error } = await client
@@ -22,6 +35,11 @@ function MainContent(props) {
     fetchSCPDetail();
   }, [Subject]);
 
+  /**
+   * Returns a JSX element that displays SCP data including image, item number, object class,
+   * containment procedures, and description.
+   * @returns {JSX.Element} - The JSX element to display SCP data.
+   */
   return (
     <>
       <div id="dataDisplay">

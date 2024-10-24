@@ -1,77 +1,85 @@
-import { useState, useEffect } from "react"; // Import hooks from React
-import { client } from "../scripts/ClientConnection"; // Import your client connection
-import "../css/styles.css"; // Import CSS styles
+import { useState, useEffect } from "react"; 
+import { client } from "../scripts/ClientConnection"; 
+import "../css/styles.css"; 
 
 function AdminPanel() {
-  // State hooks to manage SCP data, search query, and form records
-  const [scps, setSCPS] = useState([]); // Holds the list of SCP records
-  const [searchQuery, setSearchQuery] = useState(""); // Stores the current search input
+  /**
+   * Initializes state variables for managing SCP records.
+   * @returns None
+   */
+  const [scps, setSCPS] = useState([]); 
+  const [searchQuery, setSearchQuery] = useState(""); 
   const [newRecord, setNewRecord] = useState({
-    Subject: "", // Form field for SCP subject
-    Class: "", // Form field for SCP class
-    Containment: "", // Form field for containment info
-    Description: "", // Form field for description
-    Image: "", // Form field for image link
+    Subject: "", 
+    Class: "", 
+    Containment: "", 
+    Description: "", 
+    Image: "", 
   });
-  const [editRecord, setEditRecord] = useState(null); // Holds the current record being edited
+  const [editRecord, setEditRecord] = useState(null); 
 
+  /**
+   * useEffect hook that fetches data from the "SCPS" table using the client object.
+   * Sets the fetched data to the SCPS state variable.
+   * @returns None
+   */
   useEffect(() => {
-    // Fetch SCP data when the component mounts
     const fetchSCPS = async () => {
-      const { data, error } = await client.from("SCPS").select("*"); // Get all SCP records
+      const { data, error } = await client.from("SCPS").select("*"); 
       if (error) {
-        console.error(error); // Log errors if any
+        console.error(error); 
       } else {
-        setSCPS(data); // Set SCP data in state if successful
+        setSCPS(data); 
       }
     };
-    fetchSCPS(); // Call the fetch function
-  }, []); // Empty dependency array ensures this runs only once on mount
+    fetchSCPS(); 
+  }, []); 
 
-  // Helper function to format the SCP subject into "SCP-[Number]" format
+  /**
+   * Formats the input into an SCP format.
+   * @param {{string}} input - The input string to format.
+   * @returns The formatted SCP string.
+   */
   const formatSCP = (input) => {
-    if (!input) return ""; // If input is empty, return empty string
+    if (!input) return "";
 
-    const number = input.match(/\d+/)?.[0] || "0"; // Extract digits or default to "0"
-    const parsedNumber = parseInt(number, 10); // Parse the number from the string
+    const number = input.match(/\d+/)?.[0] || "0"; 
+    const parsedNumber = parseInt(number, 10); 
 
     if (parsedNumber < 100) {
-      // Add leading zeros if number < 100
       return `SCP-${parsedNumber.toString().padStart(3, "0")}`;
     }
-    return `SCP-${parsedNumber}`; // Return as is for numbers >= 100
+    return `SCP-${parsedNumber}`; 
   };
 
-  // Function to add a new SCP record
+  /**
+   * Adds a new subject record to the database after confirming with the user.
+   * @returns None
+   */
   const addSubject = async () => {
     const formattedRecord = {
-      ...newRecord, // Spread operator to copy the current newRecord state
-      Subject: formatSCP(newRecord.Subject), // Format the Subject before adding
+      ...newRecord, 
+      Subject: formatSCP(newRecord.Subject), 
     };
 
-    console.log("Test1");
-    // Check if the Subject already exists in the database
     const { data: existingRecord, error } = await client
       .from("SCPS")
       .select("Subject")
       .eq("Subject", formattedRecord.Subject)
       .single();
-      
+
     if (existingRecord) {
-      // Show an error popup if the SCP Subject already exists
       window.alert(
         `Error: \nSCP with subject name: ${formattedRecord.Subject}, already exists.`
       );
-      return; // Exit the function to prevent adding a duplicate
+      return; 
     }
 
-    // Ask for confirmation before adding
     const isConfirmed = window.confirm(
       `Are you sure you would like to add ${formattedRecord.Subject}?`
     );
 
     if (isConfirmed) {
-      // If confirmed, insert the new record into the database
       const { error: insertError } = await client
         .from("SCPS")
         .insert([formattedRecord]);
@@ -82,7 +90,6 @@ function AdminPanel() {
       }
 
       setNewRecord({
-        // Reset the form fields after submission
         Subject: "",
         Class: "",
         Containment: "",
@@ -90,13 +97,17 @@ function AdminPanel() {
         Image: "",
       });
 
-      window.location.reload(); // Refresh the page to update the SCP list
+      window.location.reload(); 
     }
   };
 
-  // Function to delete an SCP record by ID
+  /**
+   * Deletes a subject with the given id from the "SCPS" table in the database.
+   * Prompts the user for confirmation before deleting.
+   * @param {{number}} id - The id of the subject to be deleted.
+   * @returns None
+   */
   const deleteSubject = async (id) => {
-    // Fetch the SCP with the given id to retrieve its Subject name
     const { data, error } = await client
       .from("SCPS")
       .select("Subject")
@@ -106,57 +117,77 @@ function AdminPanel() {
       console.error("Error fetching SCP:\n", error);
       return;
     }
-    // Show a confirmation prompt with the SCP's subject
+
     const isConfirmed = window.confirm(
       `Are you sure you would like to delete ${data.Subject}?`
     );
 
     if (isConfirmed) {
-      // If confirmed, delete the record from the database
       await client.from("SCPS").delete().eq("id", id);
-      window.location.reload(); // Refresh the page after deletion
+      window.location.reload();
     }
   };
 
-  // Function to start editing a record
+
+  /**
+   * Sets the edit record to the provided SCP.
+   * @param {{any}} scp - The SCP to set as the edit record.
+   * @returns None
+   */
   const startEditing = (scp) => {
-    setEditRecord(scp); // Set the SCP record for editing
+    setEditRecord(scp); 
   };
 
-  // Function to save the edited record
+  /**
+   * Saves the edited record to the database after confirming with the user.
+   * @param {{string}} id - The id of the record to be edited.
+   * @returns None
+   */
   const saveEdit = async (id) => {
     const formattedRecord = {
-      ...editRecord, // Spread operator to copy the edited record state
-      Subject: formatSCP(editRecord.Subject), // Format the Subject before saving
+      ...editRecord, 
+      Subject: formatSCP(editRecord.Subject), 
     };
     const isConfirmed = window.confirm(
       `Are you sure you would like to edit ${formattedRecord.Subject}?`
     );
 
     if (isConfirmed) {
-      // If confirmed, update the SCP record in the database
       await client.from("SCPS").update(formattedRecord).eq("id", id);
-      setEditRecord(null); // Clear the edit state after saving
-      window.location.reload(); // Refresh the page after saving
+      setEditRecord(null); 
+      window.location.reload(); 
     }
   };
 
-  // Function to cancel editing
+  /**
+   * Cancels the current edit operation by setting the edit record to null.
+   * @returns None
+   */
   const cancelEdit = () => {
-    setEditRecord(null); // Clear the edit state and revert back to add mode
+    setEditRecord(null);
   };
 
-  // Filter SCPs based on the search query and sort them by number
+  /**
+   * Filters and sorts an array of objects based on a search query and a numeric value in the object's Subject property.
+   * @param {{Array}} scps - The array of objects to filter and sort.
+   * @param {{string}} searchQuery - The search query to filter the objects by.
+   * @returns A new array of objects that match the search query, sorted by the numeric value in the Subject property.
+   */
   const filteredScps = scps
     .filter(
-      (scp) => scp.Subject.toLowerCase().includes(searchQuery.toLowerCase()) // Match subject to search query
+      (scp) => scp.Subject.toLowerCase().includes(searchQuery.toLowerCase()) 
     )
     .sort((a, b) => {
-      const numA = parseInt(a.Subject.match(/\d+/), 10); // Extract number from SCP subject A
-      const numB = parseInt(b.Subject.match(/\d+/), 10); // Extract number from SCP subject B
-      return numA - numB; // Sort by SCP number in ascending order
+      const numA = parseInt(a.Subject.match(/\d+/), 10); 
+      const numB = parseInt(b.Subject.match(/\d+/), 10); 
+      return numA - numB; 
     });
 
+  /**
+   * This returns a JSX element that represents an admin interface for managing SCP records.
+   * It includes sections for adding/editing SCP records, searching SCPs, and displaying a list of SCPs.
+   * @returns {JSX.Element} The JSX element representing the admin interface.
+   */
   return (
     <>
       <div className="admin-container">

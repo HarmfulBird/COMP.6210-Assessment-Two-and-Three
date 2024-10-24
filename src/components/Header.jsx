@@ -3,8 +3,17 @@ import { NavLink, Link } from "react-router-dom";
 import { client } from "../scripts/ClientConnection";
 
 function Header() {
+  /**
+   * useState hook to manage the state of an array of SCPS.
+   * @returns An array containing the current state value and a function to update it.
+   */
   const [scps, setSCPS] = useState([]);
 
+  /**
+   * useEffect hook that fetches data from the "SCPS" table using the client object.
+   * Sets the fetched data to the state variable SCPS.
+   * @returns None
+   */
   useEffect(() => {
     const fetchSCPS = async () => {
       const { data, error } = await client.from("SCPS").select("id, Subject");
@@ -17,6 +26,10 @@ function Header() {
     fetchSCPS();
   }, []);
 
+  /**
+   * Returns the JSX code for the header section of the website, including the logo, navigation bar, and links.
+   * @returns {JSX.Element} The JSX code for the header section.
+   */
   return (
     <>
       <header className="header">

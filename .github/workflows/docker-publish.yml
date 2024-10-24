@@ -71,7 +71,6 @@ jobs:
           platforms: linux/amd64,linux/arm64/v8
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
       
       - name: Setup Cloudflare WARP Action
         uses: oHTGo/setup-cloudflare-warp-action@master
@@ -79,3 +78,10 @@ jobs:
           organization: fluffytech
           auth-client-id: ${{ secrets.AUTH_CLIENT_ID }}
           auth-client-secret: ${{ secrets.AUTH_CLIENT_SECRET }}
+
+      - name: Deploy Stage
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'localhost:9443/stacks/14/git/redeploy'
+          method: 'PUT'
+          

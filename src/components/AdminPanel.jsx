@@ -56,7 +56,7 @@ function AdminPanel() {
       .eq("Subject", formattedRecord.Subject)
       .single();
 
-    if (error) {
+    if (error && error.details != "The result contains 0 rows") {
       console.error("Error checking for existing record:\n", error);
       return;
     }

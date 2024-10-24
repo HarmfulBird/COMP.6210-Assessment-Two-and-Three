@@ -42,7 +42,7 @@ function FrontPage() {
       <div className="content-main">
         <div className="warning-home">
           <h1>
-            <span id="warn">WARNING:</span> THE FOUNDATION DATABASE IS
+            <span id="warn">NOT A WARNING:</span> THE FOUNDATION DATABASE IS
           </h1>
           <h1>
             <span id="classified">CLASSIFIED</span>

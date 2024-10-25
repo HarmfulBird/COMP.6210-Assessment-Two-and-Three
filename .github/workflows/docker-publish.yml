@@ -79,11 +79,18 @@ jobs:
           auth-client-id: ${{ secrets.AUTH_CLIENT_ID }}
           auth-client-secret: ${{ secrets.AUTH_CLIENT_SECRET }}
 
-      - name: Deploy Stage
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: '192.168.1.114:9443/stacks/14/git/redeploy'
-          method: 'PUT'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"prune": true,"pullImage": true,"stackName": "websites"}'
+      # Authenticate with Portainer API
+      - name: Authenticate with Portainer
+        run: |
+          curl -s -X POST "https://portainer.example.com/api/auth" \
+          -H "Content-Type: application/json" \
+          --data '{"username": ${{ secrets.USERNAME }}, "password": ${{ secrets.PASSWORD }}}' > /tmp/portainer-token.json
+
+      # Redeploy the entire stack after the new image is built and pushed
+      - name: Redeploy Website Stack
+        run: |
+          TOKEN=$(cat /tmp/portainer-token.json | jq -r '.jwt')
+          curl -s -X POST "https://portainer.example.com/api/stacks/14/deploy" \
+          -H "Authorization: Bearer $TOKEN" \
+          -H "Content-Type: application/json"
           

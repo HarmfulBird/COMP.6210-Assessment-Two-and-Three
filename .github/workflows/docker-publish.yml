@@ -93,11 +93,12 @@ jobs:
           echo "$RESPONSE" > /tmp/portainer-token.json
           cat /tmp/portainer-token.json
       
+      # Validate Token
       - name: Validate Token
         run: |
           echo "Full Response:"
           cat /tmp/portainer-token.json
-          TOKEN=$(cat /tmp/portainer-token.json | jq -r '.jwt')
+          TOKEN=$(jq -r '.jwt' /tmp/portainer-token.json)
           if [ -z "$TOKEN" ]; then
             echo "Error: Token is empty or invalid"
             exit 1
@@ -105,13 +106,15 @@ jobs:
             echo "Token: $TOKEN"
           fi
       
+      # Redeploy Website Stack
       - name: Redeploy Website Stack
         run: |
-          TOKEN=$(cat /tmp/portainer-token.json | jq -r '.jwt')
+          TOKEN=$(jq -r '.jwt' /tmp/portainer-token.json)
           echo "Token: $TOKEN"
           RESPONSE=$(curl -s -X POST "https://${{ secrets.PORTAINER_URL }}/api/stacks/14/deploy" \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json")
           echo "Redeploy Response: $RESPONSE"
+
 
 

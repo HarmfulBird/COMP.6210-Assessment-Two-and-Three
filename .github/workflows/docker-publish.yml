@@ -96,7 +96,7 @@ jobs:
       - name: Validate Token
         run: |
           echo "Full Response:"
-          cat /tmp/portainer-token.json | jq .
+          cat /tmp/portainer-token.json
           TOKEN=$(cat /tmp/portainer-token.json | jq -r '.jwt')
           if [ -z "$TOKEN" ]; then
             echo "Error: Token is empty or invalid"

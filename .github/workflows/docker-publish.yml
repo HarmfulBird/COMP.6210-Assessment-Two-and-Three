@@ -79,10 +79,14 @@ jobs:
           auth-client-id: ${{ secrets.AUTH_CLIENT_ID }}
           auth-client-secret: ${{ secrets.AUTH_CLIENT_SECRET }}
 
+      - name: Ping Portainer
+        run: |
+          ping -c 4 ${{ secrets.PORTAINER_URL }}
+          
       # Authenticate with Portainer API
       - name: Authenticate with Portainer
         run: |
-          RESPONSE=$(curl -k -X POST "https://${{ secrets.PORTAINER_URL }}/api/auth" \
+          RESPONSE=$(curl -k -v -X POST "https://${{ secrets.PORTAINER_URL }}/api/auth" \
             -H "Content-Type: application/json" \
             --data "{\"username\": \"${{ secrets.USERNAME }}\", \"password\": \"${{ secrets.PASSWORD }}\"}")
           echo "$RESPONSE" > /tmp/portainer-token.json

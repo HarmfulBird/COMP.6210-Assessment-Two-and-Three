@@ -72,49 +72,45 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       
-      - name: Setup Cloudflare WARP Action
-        uses: oHTGo/setup-cloudflare-warp-action@master
-        with:
-          organization: fluffytech
-          auth-client-id: ${{ secrets.AUTH_CLIENT_ID }}
-          auth-client-secret: ${{ secrets.AUTH_CLIENT_SECRET }}
-
-      - name: Ping Portainer
-        run: |
-          ping -c 4 ${{ secrets.PORTAINER_URL }}
+      #- name: Setup Cloudflare WARP Action
+      #  uses: oHTGo/setup-cloudflare-warp-action@master
+      #  with:
+      #    organization: fluffytech
+      #    auth-client-id: ${{ secrets.AUTH_CLIENT_ID }}
+      #    auth-client-secret: ${{ secrets.AUTH_CLIENT_SECRET }}
           
       # Authenticate with Portainer API
-      - name: Authenticate with Portainer
-        run: |
-          RESPONSE=$(curl -k -v -X POST "https://${{ secrets.PORTAINER_URL }}/api/auth" \
-            -H "Content-Type: application/json" \
-            --data "{\"username\": \"${{ secrets.USERNAME }}\", \"password\": \"${{ secrets.PASSWORD }}\"}")
-          echo "Response: $RESPONSE"
-          echo "$RESPONSE" > /tmp/portainer-token.json
-          cat /tmp/portainer-token.json
+      #- name: Authenticate with Portainer
+      #  run: |
+      #    RESPONSE=$(curl -k -v -X POST "https://${{ secrets.PORTAINER_URL }}/api/auth" \
+      #      -H "Content-Type: application/json" \
+      #      --data "{\"username\": \"${{ secrets.USERNAME }}\", \"password\": \"${{ secrets.PASSWORD }}\"}")
+      #    echo "Response: $RESPONSE"
+      #    echo "$RESPONSE" > /tmp/portainer-token.json
+      #    cat /tmp/portainer-token.json
       
       # Validate Token
-      - name: Validate Token
-        run: |
-          echo "Full Response:"
-          cat /tmp/portainer-token.json
-          TOKEN=$(jq -r '.jwt' /tmp/portainer-token.json)
-          if [ -z "$TOKEN" ]; then
-            echo "Error: Token is empty or invalid"
-            exit 1
-          else
-            echo "Token: $TOKEN"
-          fi
+      #- name: Validate Token
+      #  run: |
+      #    echo "Full Response:"
+      #    cat /tmp/portainer-token.json
+      #    TOKEN=$(jq -r '.jwt' /tmp/portainer-token.json)
+      #    if [ -z "$TOKEN" ]; then
+      #      echo "Error: Token is empty or invalid"
+      #      exit 1
+      #    else
+      #      echo "Token: $TOKEN"
+      #    fi
       
       # Redeploy Website Stack
-      - name: Redeploy Website Stack
-        run: |
-          TOKEN=$(jq -r '.jwt' /tmp/portainer-token.json)
-          echo "Token: $TOKEN"
-          RESPONSE=$(curl -s -X POST "https://${{ secrets.PORTAINER_URL }}/api/stacks/14/deploy" \
-            -H "Authorization: Bearer $TOKEN" \
-            -H "Content-Type: application/json")
-          echo "Redeploy Response: $RESPONSE"
+      #- name: Redeploy Website Stack
+      #  run: |
+      #    TOKEN=$(jq -r '.jwt' /tmp/portainer-token.json)
+      #    echo "Token: $TOKEN"
+      #    RESPONSE=$(curl -s -X POST "https://${{ secrets.PORTAINER_URL }}/api/stacks/14/deploy" \
+      #      -H "Authorization: Bearer $TOKEN" \
+      #      -H "Content-Type: application/json")
+      #    echo "Redeploy Response: $RESPONSE"
 
 
 

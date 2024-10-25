@@ -71,6 +71,14 @@ jobs:
           platforms: linux/amd64,linux/arm64/v8
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Register WARP with Cloudflare
+        run: |
+          sudo warp-cli --accept-tos register
+
+      - name: Confirm WARP Status
+        run: |
+          sudo warp-cli --accept-tos status
       
       - name: Setup Cloudflare WARP Action
         uses: oHTGo/setup-cloudflare-warp-action@master
@@ -82,7 +90,7 @@ jobs:
       # Authenticate with Portainer API
       - name: Authenticate with Portainer
         run: |
-          RESPONSE=$(curl -s -X POST "https://${{ secrets.PORTAINER_URL }}/api/auth" \
+          RESPONSE=$(curl -k -v -X POST "https://${{ secrets.PORTAINER_URL }}/api/auth" \
             -H "Content-Type: application/json" \
             --data "{\"username\": \"${{ secrets.USERNAME }}\", \"password\": \"${{ secrets.PASSWORD }}\"}")
           echo "$RESPONSE" > /tmp/portainer-token.json

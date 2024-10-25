@@ -82,6 +82,8 @@ jobs:
       - name: Deploy Stage
         uses: fjogeleit/http-request-action@v1
         with:
-          url: 'localhost:9443/stacks/14/git/redeploy'
+          url: '192.168.1.114:9443/stacks/14/git/redeploy'
           method: 'PUT'
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: '{"prune": true,"pullImage": true,"stackName": "websites"}'
           

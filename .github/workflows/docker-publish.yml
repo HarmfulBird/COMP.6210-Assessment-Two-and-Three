@@ -95,6 +95,8 @@ jobs:
       
       - name: Validate Token
         run: |
+          echo "Full Response:"
+          cat /tmp/portainer-token.json | jq .
           TOKEN=$(cat /tmp/portainer-token.json | jq -r '.jwt')
           if [ -z "$TOKEN" ]; then
             echo "Error: Token is empty or invalid"
@@ -111,4 +113,5 @@ jobs:
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json")
           echo "Redeploy Response: $RESPONSE"
+
 

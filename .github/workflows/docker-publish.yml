@@ -82,7 +82,7 @@ jobs:
       # Authenticate with Portainer API
       - name: Authenticate with Portainer
         run: |
-          RESPONSE=$(curl -k -v -X POST "https://${{ secrets.PORTAINER_URL }}/api/auth" \
+          RESPONSE=$(curl -k -X POST "https://${{ secrets.PORTAINER_URL }}/api/auth" \
             -H "Content-Type: application/json" \
             --data "{\"username\": \"${{ secrets.USERNAME }}\", \"password\": \"${{ secrets.PASSWORD }}\"}")
           echo "$RESPONSE" > /tmp/portainer-token.json

@@ -71,14 +71,6 @@ jobs:
           platforms: linux/amd64,linux/arm64/v8
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Register WARP with Cloudflare
-        run: |
-          sudo warp-cli --accept-tos register
-
-      - name: Confirm WARP Status
-        run: |
-          sudo warp-cli --accept-tos status
       
       - name: Setup Cloudflare WARP Action
         uses: oHTGo/setup-cloudflare-warp-action@master
@@ -96,7 +88,6 @@ jobs:
           echo "$RESPONSE" > /tmp/portainer-token.json
           cat /tmp/portainer-token.json
 
-      # Redeploy the entire stack after the new image is built and pushed
       - name: Redeploy Website Stack
         run: |
           TOKEN=$(cat /tmp/portainer-token.json | jq -r '.jwt')

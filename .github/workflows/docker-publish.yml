@@ -89,9 +89,10 @@ jobs:
           RESPONSE=$(curl -k -v -X POST "https://${{ secrets.PORTAINER_URL }}/api/auth" \
             -H "Content-Type: application/json" \
             --data "{\"username\": \"${{ secrets.USERNAME }}\", \"password\": \"${{ secrets.PASSWORD }}\"}")
+          echo "Response: $RESPONSE"
           echo "$RESPONSE" > /tmp/portainer-token.json
           cat /tmp/portainer-token.json
-
+      
       - name: Validate Token
         run: |
           TOKEN=$(cat /tmp/portainer-token.json | jq -r '.jwt')
@@ -101,7 +102,7 @@ jobs:
           else
             echo "Token: $TOKEN"
           fi
-
+      
       - name: Redeploy Website Stack
         run: |
           TOKEN=$(cat /tmp/portainer-token.json | jq -r '.jwt')
@@ -110,3 +111,4 @@ jobs:
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json")
           echo "Redeploy Response: $RESPONSE"
+
